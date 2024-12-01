@@ -9,7 +9,6 @@ package com.example.currencytracker.model;
  * @author Nkt
  */
 
-
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,7 +21,13 @@ public class User {
     @Id
     private String id;
 
-    private String username;  // User Name.
-    private List<String> subscriptions; // User subscriptions to currency pairs.
-}
+    private String username;
+    private String email;
+    private NotificationPreferences notificationPreferences;
 
+    @Data
+    public static class NotificationPreferences {
+        private boolean enabled;
+        private List<String> currencyPairs;
+    }
+}
