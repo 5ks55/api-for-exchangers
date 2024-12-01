@@ -16,15 +16,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Data
 @Document(collection = "reports")
 public class Report {
     @Id
     private String id;
 
-    private String reportType;  // Report type (e.g. ‘Daily’, ‘Weekly’).
-    private LocalDateTime createdAt; // The date and time the report was created.
-    private List<String> currencyPairs; // Currency pairs included.
-    private String dateRange;  // Specified time range (e.g., ‘01-11-2024 to 10-11-2024’).
+    private String userId;
+    private List<String> currencyPair;
+    private TimeRange timeRange;
+    private LocalDateTime createdOn;
+
+    @Data
+    public static class TimeRange {
+        private LocalDateTime start;
+        private LocalDateTime end;
+    }
 }
