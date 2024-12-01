@@ -11,7 +11,7 @@ package com.example.currencytracker.controller;
 
 import com.example.currencytracker.model.ExchangeRate;
 import com.example.currencytracker.service.ExchangeRateService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,19 +19,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/exchange-rates")
 public class ExchangeRateController {
-    private final ExchangeRateService service;
 
-    public ExchangeRateController(ExchangeRateService service) {
-        this.service = service;
-    }
+    @Autowired
+    private ExchangeRateService exchangeRateService;
 
     @GetMapping
     public List<ExchangeRate> getAllExchangeRates() {
-        return service.getAllExchangeRates();
+        return exchangeRateService.getAllExchangeRates();
     }
 
     @PostMapping
-    public ResponseEntity<ExchangeRate> saveExchangeRate(@RequestBody ExchangeRate exchangeRate) {
-        return ResponseEntity.ok(service.saveExchangeRate(exchangeRate));
+    public ExchangeRate addExchangeRate(@RequestBody ExchangeRate exchangeRate) {
+        return exchangeRateService.addExchangeRate(exchangeRate);
     }
 }

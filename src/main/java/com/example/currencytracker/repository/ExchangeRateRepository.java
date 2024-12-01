@@ -11,8 +11,12 @@ package com.example.currencytracker.repository;
 
 import com.example.currencytracker.model.ExchangeRate;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface ExchangeRateRepository extends MongoRepository<ExchangeRate, String> {
-
+    List<ExchangeRate> findByCurrencyPair(String currencyPair);
 }
 

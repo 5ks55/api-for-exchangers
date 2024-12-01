@@ -11,23 +11,22 @@ package com.example.currencytracker.service;
 
 import com.example.currencytracker.model.ExchangeRate;
 import com.example.currencytracker.repository.ExchangeRateRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ExchangeRateService {
-    private final ExchangeRateRepository repository;
 
-    public ExchangeRateService(ExchangeRateRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private ExchangeRateRepository exchangeRateRepository;
 
     public List<ExchangeRate> getAllExchangeRates() {
-        return repository.findAll();
+        return exchangeRateRepository.findAll();
     }
 
-    public ExchangeRate saveExchangeRate(ExchangeRate exchangeRate) {
-        return repository.save(exchangeRate);
+    public ExchangeRate addExchangeRate(ExchangeRate exchangeRate) {
+        return exchangeRateRepository.save(exchangeRate);
     }
 }

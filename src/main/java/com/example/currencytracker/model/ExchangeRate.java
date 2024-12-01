@@ -9,22 +9,22 @@ package com.example.currencytracker.model;
  * @author Nkt
  */
 
+import java.time.LocalDateTime;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDateTime;
 
 @Data
 @Document(collection = "exchange_rates")
 public class ExchangeRate {
     @Id
-    private String id;  // The unique identifier of the document in MongoDB.
+    private String id;
 
-    private String currencyPair;  // For example, ‘USD/EUR.’
-    private Double buyRate;       // Buying rate.
-    private Double sellRate;      // Sale rate
-    private LocalDateTime lastUpdated; // The date and time of the last update.
+    private String currencyPair;
+    private Double buyRate;
+    private Double sellRate;
+    private LocalDateTime lastUpdated;
+    private String platformId;   
 }
 
 
