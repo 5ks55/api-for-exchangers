@@ -11,7 +11,8 @@ package com.example.currencytracker.repository;
 
 import com.example.currencytracker.model.ExchangeRateHistory;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ExchangeRateHistoryRepository extends MongoRepository<ExchangeRateHistory, String> {
-    
 }

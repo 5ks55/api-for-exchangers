@@ -12,8 +12,8 @@ package com.example.currencytracker.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
+
 
 @Data
 @Document(collection = "exchange_rate_history")
@@ -21,7 +21,9 @@ public class ExchangeRateHistory {
     @Id
     private String id;
 
-    private String exchangeRateId;  // Link to ExchangeRate.
-    private Double rate;            // The currency exchange rate at the time of the update.
-    private LocalDateTime timestamp; // The time to update the currency rate
+    private String currencyPair;
+    private Double buyRate;
+    private Double sellRate;
+    private LocalDateTime lastUpdated;
+    private String platformId;
 }
