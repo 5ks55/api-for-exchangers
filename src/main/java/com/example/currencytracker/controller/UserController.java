@@ -55,5 +55,12 @@ public class UserController {
         logger.info("Nowy użytkownik został zapisany z ID: {}", user.getId());
         return user;
     }
-
+    
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
+        logger.info("Otrzymano żądanie aktualizacji danych użytkownika o ID: {}", id);
+        User updatedUser = userService.updateUser(id, userDto);
+        logger.info("Zaktualizowano dane użytkownika o ID: {}", updatedUser.getId());
+        return updatedUser;
+    }
 }
