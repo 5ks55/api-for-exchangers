@@ -52,6 +52,20 @@ public class ExchangeRateHistoryController {
             return null;
         }
     }
+    
+     @DeleteMapping("/{id}")
+    public String usunHistorieKursu(@PathVariable String id) {
+        logger.info("Otrzymano żądanie usunięcia historii kursu waluty o ID: {}", id);
+        try {
+            exchangeRateHistoryService.deleteById(id);
+            logger.info("Historia kursu waluty o ID {} została pomyślnie usunięta.", id);
+            return "Historia kursu waluty usunięta pomyślnie.";
+        } catch (Exception e) {
+            logger.error("Wystąpił błąd podczas usuwania historii kursu waluty o ID: {}", id, e);
+            return "Nie udało się usunąć historii kursu waluty.";
+        }
+    }
+
 
     @PostMapping
     public ExchangeRateHistoryDto dodajHistorieKursu(@RequestBody ExchangeRateHistoryDto dto) {
