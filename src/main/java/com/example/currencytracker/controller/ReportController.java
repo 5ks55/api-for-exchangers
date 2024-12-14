@@ -55,4 +55,11 @@ public class ReportController {
         return createdReport;
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteReport(@PathVariable String id) {
+        logger.info("Rozpoczynanie usuwania raportu z ID: {}", id);
+        reportService.deleteReport(id);
+        logger.info("Raport z ID: {} został pomyślnie usunięty.", id);
+        return "Raport o ID " + id + " został pomyślnie usunięty.";
+    }
 }
