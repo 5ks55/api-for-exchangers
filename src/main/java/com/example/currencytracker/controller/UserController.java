@@ -9,8 +9,11 @@ package com.example.currencytracker.controller;
  * @author Nkt
  */
 
+import com.example.currencytracker.dto.UserDto;
 import com.example.currencytracker.model.User;
 import com.example.currencytracker.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,16 +23,37 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
+    private static final Logger logger = LogManager.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        logger.info("Otrzymano żądanie pobrania wszystkich użytkowników.");
+        List<User> users = userService.getAllUsers();
+        logger.debug("Zwrócono {} użytkowników.", users.size());
+        return users;
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable String id) {
+        logger.info("Otrzymano żądanie pobrania użytkownika o ID: {}", id);
+        User user = userService.getUserById(id);
+        if (user != null) {
+            logger.debug("Zwrócono użytkownika: {}", user);
+        } else {
+            logger.warn("Nie znaleziono użytkownika o ID: {}", id);
+        }
+        return user;
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public User addUser(@RequestBody UserDto userDto) {
+        logger.info("Otrzymano żądanie dodania nowego użytkownika.");
+        User user = userService.addUser(userDto);
+        logger.info("Nowy użytkownik został zapisany z ID: {}", user.getId());
+        return user;
     }
+
 }
