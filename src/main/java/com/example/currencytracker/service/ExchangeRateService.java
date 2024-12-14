@@ -24,7 +24,7 @@ public class ExchangeRateService {
     @Autowired
     private ExchangeRateRepository exchangeRateRepository;
 
-    // Получение всех курсов
+   
     public List<ExchangeRateDto> getAllExchangeRates() {
         List<ExchangeRate> exchangeRates = exchangeRateRepository.findAll();
         return exchangeRates.stream()
@@ -32,7 +32,7 @@ public class ExchangeRateService {
                 .collect(Collectors.toList());
     }
 
-    // Получение курса по ID
+ 
     public ExchangeRateDto getExchangeRateById(String id) {
         ExchangeRate exchangeRate = exchangeRateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Exchange rate not found"));
@@ -40,41 +40,41 @@ public class ExchangeRateService {
     }
 
     public ExchangeRateDto addExchangeRate(ExchangeRateDto exchangeRateDto) {
-        // Создаем новый объект ExchangeRate
         ExchangeRate exchangeRate = new ExchangeRate();
 
-        // Устанавливаем значения из DTO в объект модели
         exchangeRate.setCurrencyPair(exchangeRateDto.getCurrencyPair());
         exchangeRate.setBuyRate(exchangeRateDto.getBuyRate());
         exchangeRate.setSellRate(exchangeRateDto.getSellRate());
-        exchangeRate.setPlatformId(exchangeRateDto.getPlatformId());  // Используем Long
+        exchangeRate.setPlatformId(exchangeRateDto.getPlatformId());
+        exchangeRate.setLastUpdated(exchangeRateDto.getLastUpdated());  
 
-        // Сохраняем объект в базе данных через репозиторий
         exchangeRate = exchangeRateRepository.save(exchangeRate);
 
-        // Возвращаем объект DTO с сохраненным курсом
-        return new ExchangeRateDto(exchangeRate);  // Возвращаем добавленный курс как DTO
+        return new ExchangeRateDto(exchangeRate); 
     }
 
-
-
-
-    // Обновление курса
     public ExchangeRateDto updateExchangeRate(String id, ExchangeRateDto exchangeRateDto) {
         ExchangeRate exchangeRate = exchangeRateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Exchange rate not found"));
 
-        exchangeRate.setCurrencyPair(exchangeRateDto.getCurrencyPair());
-        exchangeRate.setBuyRate(exchangeRateDto.getBuyRate());
-        exchangeRate.setSellRate(exchangeRateDto.getSellRate());
-        exchangeRate.setLastUpdated(exchangeRateDto.getLastUpdated());
-        exchangeRate.setPlatformId(exchangeRateDto.getPlatformId());
+        if (exchangeRateDto.getBuyRate() != 0) {  
+            exchangeRate.setBuyRate(exchangeRateDto.getBuyRate());
+        }
+
+        if (exchangeRateDto.getSellRate() != 0) {  
+            exchangeRate.setSellRate(exchangeRateDto.getSellRate());
+        }
+
+        if (exchangeRateDto.getLastUpdated() != null) { 
+            exchangeRate.setLastUpdated(exchangeRateDto.getLastUpdated());
+        }
 
         exchangeRate = exchangeRateRepository.save(exchangeRate);
-        return new ExchangeRateDto(exchangeRate);  // Возвращаем обновленный курс как DTO
+
+        return new ExchangeRateDto(exchangeRate);
     }
 
-    // Удаление курса
+
     public void deleteExchangeRate(String id) {
         ExchangeRate exchangeRate = exchangeRateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Exchange rate not found"));

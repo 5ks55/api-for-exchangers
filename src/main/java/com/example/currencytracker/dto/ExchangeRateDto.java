@@ -9,6 +9,7 @@ package com.example.currencytracker.dto;
  * @author Nazar
  */
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import com.example.currencytracker.model.ExchangeRate;
 
@@ -18,10 +19,12 @@ public class ExchangeRateDto {
     private String currencyPair;
     private double buyRate;
     private double sellRate;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastUpdated;
+    
     private int platformId;
 
-    // Пустой конструктор (необходим для Jackson)
     public ExchangeRateDto() {
     }
     
@@ -33,7 +36,6 @@ public class ExchangeRateDto {
         this.platformId = exchangeRate.getPlatformId();
     }
 
-    // Геттеры и сеттеры
     public String getCurrencyPair() {
         return currencyPair;
     }

@@ -46,5 +46,21 @@ public class ExchangeRateController {
         ExchangeRateDto rate = exchangeRateService.getExchangeRateById(id);
         return ResponseEntity.ok(rate);
     }
+     // Dodaj nowy kurs waluty
+    @PostMapping
+    public ResponseEntity<ExchangeRateDto> addExchangeRate(@RequestBody @Valid ExchangeRateDto exchangeRateDto) {
+        logger.info("Żądanie dodania nowego kursu waluty: {}", exchangeRateDto);
+        ExchangeRateDto createdRate = exchangeRateService.addExchangeRate(exchangeRateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRate);
+    }
 
+    // Zaktualizuj istniejący kurs waluty
+    @PutMapping("/{id}")
+    public ResponseEntity<ExchangeRateDto> updateExchangeRate(
+            @PathVariable String id, 
+            @RequestBody @Valid ExchangeRateDto exchangeRateDto) {
+        logger.info("Żądanie aktualizacji kursu waluty o ID {}: {}", id, exchangeRateDto);
+        ExchangeRateDto updatedRate = exchangeRateService.updateExchangeRate(id, exchangeRateDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
+    }
 }
