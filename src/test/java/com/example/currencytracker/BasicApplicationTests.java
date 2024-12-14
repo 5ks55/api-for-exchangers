@@ -1,4 +1,4 @@
-package com.example;
+package com.example.currencytracker;
 
 
 import org.junit.jupiter.api.Test;
