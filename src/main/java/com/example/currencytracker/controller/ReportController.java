@@ -11,6 +11,10 @@ package com.example.currencytracker.controller;
 
 import com.example.currencytracker.model.Report;
 import com.example.currencytracker.service.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
+@Tag(name = "Reports Controller", description = "API do zarządzania raportami")
 public class ReportController {
 
     private static final Logger logger = LogManager.getLogger(ReportController.class);
@@ -28,6 +33,8 @@ public class ReportController {
     private ReportService reportService;
 
     @GetMapping
+    @Operation(summary = "Pobierz wszystkie raporty", description = "Zwraca listę wszystkich raportów")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie raporty")
     public List<Report> getAllReports() {
         logger.info("Rozpoczynanie pobierania wszystkich raportów z bazy danych.");
         List<Report> reports = reportService.getAllReports();
@@ -36,7 +43,10 @@ public class ReportController {
     }
 
     @GetMapping("/{id}")
-    public Report getReportById(@PathVariable String id) {
+    @Operation(summary = "Pobierz raport po ID", description = "Zwraca raport na podstawie ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano raport")
+    @ApiResponse(responseCode = "404", description = "Raport nie został znaleziony")
+    public Report getReportById(@Parameter(description = "ID raportu, który ma zostać pobrany") @PathVariable String id) {
         logger.info("Rozpoczynanie pobierania raportu z ID: {}", id);
         Report report = reportService.getReportById(id);
         if (report != null) {
@@ -48,6 +58,8 @@ public class ReportController {
     }
 
     @PostMapping
+    @Operation(summary = "Tworzenie nowego raportu", description = "Tworzy nowy raport")
+    @ApiResponse(responseCode = "201", description = "Pomyślnie utworzono raport")
     public Report createReport(@RequestBody Report report) {
         logger.info("Rozpoczynanie tworzenia nowego raportu dla userId: {}", report.getUserId());
         Report createdReport = reportService.addReport(report);
@@ -56,7 +68,10 @@ public class ReportController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteReport(@PathVariable String id) {
+    @Operation(summary = "Usuwanie raportu", description = "Usuwa raport na podstawie ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie usunięto raport")
+    @ApiResponse(responseCode = "404", description = "Raport nie został znaleziony")
+    public String deleteReport(@Parameter(description = "ID raportu, który ma zostać usunięty") @PathVariable String id) {
         logger.info("Rozpoczynanie usuwania raportu z ID: {}", id);
         reportService.deleteReport(id);
         logger.info("Raport z ID: {} został pomyślnie usunięty.", id);

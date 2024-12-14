@@ -12,6 +12,10 @@ package com.example.currencytracker.controller;
 import com.example.currencytracker.dto.ExchangeRateHistoryDto;
 import com.example.currencytracker.model.ExchangeRateHistory;
 import com.example.currencytracker.service.ExchangeRateHistoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/exchange-rate-history")
+@Tag(name = "Exchange Rate History Controller", description = "API do zarządzania historią kursów walut")
 public class ExchangeRateHistoryController {
 
     private static final Logger logger = LogManager.getLogger(ExchangeRateHistoryController.class);
@@ -30,6 +35,8 @@ public class ExchangeRateHistoryController {
     private ExchangeRateHistoryService exchangeRateHistoryService;
 
     @GetMapping
+    @Operation(summary = "Pobierz wszystkie historie kursów", description = "Zwraca listę wszystkich historii kursów walut")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie historie kursów")
     public List<ExchangeRateHistoryDto> pobierzWszystkieHistorieKursow() {
         logger.info("Otrzymano żądanie pobrania wszystkich historii kursów walut.");
         List<ExchangeRateHistoryDto> historie = exchangeRateHistoryService.getAllExchangeRateHistories()
@@ -41,7 +48,11 @@ public class ExchangeRateHistoryController {
     }
 
     @GetMapping("/{id}")
-    public ExchangeRateHistoryDto pobierzHistorieKursuPoId(@PathVariable String id) {
+    @Operation(summary = "Pobierz historię kursu waluty po ID", description = "Zwraca historię kursu waluty na podstawie ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano historię kursu")
+    @ApiResponse(responseCode = "404", description = "Historia kursu o podanym ID nie została znaleziona")
+    public ExchangeRateHistoryDto pobierzHistorieKursuPoId(
+            @Parameter(description = "ID historii kursu waluty do pobrania") @PathVariable String id) {
         logger.info("Otrzymano żądanie pobrania historii kursu waluty o ID: {}", id);
         ExchangeRateHistory historia = exchangeRateHistoryService.getExchangeRateHistoryById(id);
         if (historia != null) {
@@ -52,9 +63,12 @@ public class ExchangeRateHistoryController {
             return null;
         }
     }
-    
-     @DeleteMapping("/{id}")
-    public String usunHistorieKursu(@PathVariable String id) {
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Usuń historię kursu", description = "Usuwa historię kursu waluty na podstawie ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie usunięto historię kursu")
+    @ApiResponse(responseCode = "404", description = "Historia kursu o podanym ID nie została znaleziona")
+    public String usunHistorieKursu(@Parameter(description = "ID historii kursu waluty do usunięcia") @PathVariable String id) {
         logger.info("Otrzymano żądanie usunięcia historii kursu waluty o ID: {}", id);
         try {
             exchangeRateHistoryService.deleteById(id);
@@ -66,8 +80,9 @@ public class ExchangeRateHistoryController {
         }
     }
 
-
     @PostMapping
+    @Operation(summary = "Dodaj historię kursu", description = "Tworzy nową historię kursu waluty")
+    @ApiResponse(responseCode = "201", description = "Pomyślnie utworzono historię kursu waluty")
     public ExchangeRateHistoryDto dodajHistorieKursu(@RequestBody ExchangeRateHistoryDto dto) {
         logger.info("Otrzymano żądanie dodania nowej historii kursu waluty: {}", dto);
         ExchangeRateHistory historia = exchangeRateHistoryService.addExchangeRateHistory(convertToEntity(dto));

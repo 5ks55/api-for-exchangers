@@ -10,8 +10,11 @@ package com.example.currencytracker.controller;
  */
 
 import com.example.currencytracker.dto.ExchangeRateDto;
-import com.example.currencytracker.model.ExchangeRate;
 import com.example.currencytracker.service.ExchangeRateService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/exchange-rates")
+@Tag(name = "Exchange Rate Controller", description = "API do zarządzania kursami walut")
 public class ExchangeRateController {
 
     private static final Logger logger = LoggerFactory.getLogger(ExchangeRateController.class);
@@ -31,8 +35,9 @@ public class ExchangeRateController {
     @Autowired
     private ExchangeRateService exchangeRateService;
 
-    // Pobierz wszystkie kursy walut
     @GetMapping
+    @Operation(summary = "Pobierz wszystkie kursy walut", description = "Pobiera wszystkie kursy walut z bazy danych")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie kursy walut")
     public ResponseEntity<List<ExchangeRateDto>> getAllExchangeRates() {
         logger.info("Rozpoczynanie pobierania wszystkich kursów walut z bazy danych.");
         List<ExchangeRateDto> rates = exchangeRateService.getAllExchangeRates();
@@ -40,9 +45,12 @@ public class ExchangeRateController {
         return ResponseEntity.ok(rates);
     }
 
-    // Pobierz kurs waluty po ID
     @GetMapping("/{id}")
-    public ResponseEntity<ExchangeRateDto> getExchangeRateById(@PathVariable String id) {
+    @Operation(summary = "Pobierz kurs waluty po ID", description = "Pobiera kurs waluty po jego ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano kurs waluty")
+    @ApiResponse(responseCode = "404", description = "Kurs waluty nie znaleziony")
+    public ResponseEntity<ExchangeRateDto> getExchangeRateById(
+            @Parameter(description = "ID kursu waluty do pobrania") @PathVariable String id) {
         logger.info("Rozpoczynanie pobierania kursu waluty o ID: {}", id);
         ExchangeRateDto rate = exchangeRateService.getExchangeRateById(id);
         if (rate != null) {
@@ -53,8 +61,9 @@ public class ExchangeRateController {
         return ResponseEntity.ok(rate);
     }
 
-    // Dodaj nowy kurs waluty
     @PostMapping
+    @Operation(summary = "Dodaj nowy kurs waluty", description = "Tworzy nowy kurs waluty")
+    @ApiResponse(responseCode = "201", description = "Pomyślnie dodano kurs waluty")
     public ResponseEntity<ExchangeRateDto> addExchangeRate(@RequestBody @Valid ExchangeRateDto exchangeRateDto) {
         logger.info("Rozpoczynanie dodawania nowego kursu waluty: {}", exchangeRateDto);
         ExchangeRateDto createdRate = exchangeRateService.addExchangeRate(exchangeRateDto);
@@ -62,10 +71,12 @@ public class ExchangeRateController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRate);
     }
 
-    // Zaktualizuj istniejący kurs waluty
     @PutMapping("/{id}")
+    @Operation(summary = "Aktualizuj kurs waluty", description = "Aktualizuje istniejący kurs waluty")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie zaktualizowano kurs waluty")
+    @ApiResponse(responseCode = "404", description = "Kurs waluty nie znaleziony")
     public ResponseEntity<ExchangeRateDto> updateExchangeRate(
-            @PathVariable String id, 
+            @Parameter(description = "ID kursu waluty do zaktualizowania") @PathVariable String id, 
             @RequestBody @Valid ExchangeRateDto exchangeRateDto) {
         logger.info("Rozpoczynanie aktualizacji kursu waluty o ID: {}. Nowe dane: {}", id, exchangeRateDto);
         ExchangeRateDto updatedRate = exchangeRateService.updateExchangeRate(id, exchangeRateDto);
@@ -73,9 +84,11 @@ public class ExchangeRateController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
     }
 
-    // Usuń kurs waluty
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteExchangeRate(@PathVariable String id) {
+    @Operation(summary = "Usuń kurs waluty", description = "Usuwa kurs waluty po jego ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie usunięto kurs waluty")
+    @ApiResponse(responseCode = "404", description = "Kurs waluty nie znaleziony")
+    public ResponseEntity<String> deleteExchangeRate(@Parameter(description = "ID kursu waluty do usunięcia") @PathVariable String id) {
         logger.info("Rozpoczynanie usuwania kursu waluty o ID: {}", id);
         exchangeRateService.deleteExchangeRate(id);
         logger.info("Kurs waluty o ID: {} został pomyślnie usunięty.", id);

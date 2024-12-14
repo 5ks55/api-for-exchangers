@@ -12,6 +12,10 @@ package com.example.currencytracker.controller;
 import com.example.currencytracker.dto.ExchangePlatformDto;
 import com.example.currencytracker.model.ExchangePlatform;
 import com.example.currencytracker.service.ExchangePlatformService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/exchange-platforms")
+@Tag(name = "Exchange Platform Controller", description = "API do zarządzania platformami wymiany")
 public class ExchangePlatformController {
 
     private static final Logger logger = LogManager.getLogger(ExchangePlatformController.class);
@@ -29,8 +34,9 @@ public class ExchangePlatformController {
     @Autowired
     private ExchangePlatformService exchangePlatformService;
 
-    // Pobierz wszystkie platformy wymiany
     @GetMapping
+    @Operation(summary = "Pobierz wszystkie platformy wymiany", description = "Pobiera wszystkie platformy wymiany z bazy danych")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie platformy wymiany")
     public List<ExchangePlatformDto> getAllExchangePlatforms() {
         logger.info("Otrzymano żądanie pobrania wszystkich platform wymiany.");
         List<ExchangePlatform> platforms = exchangePlatformService.getAllExchangePlatforms();
@@ -41,9 +47,11 @@ public class ExchangePlatformController {
         return platformDtos;
     }
 
-    // Pobierz platformę wymiany po ID
     @GetMapping("/{id}")
-    public ExchangePlatformDto getExchangePlatformById(@PathVariable String id) {
+    @Operation(summary = "Pobierz platformę wymiany po ID", description = "Pobiera platformę wymiany po jej ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano platformę wymiany")
+    @ApiResponse(responseCode = "404", description = "Platforma wymiany nie znaleziona")
+    public ExchangePlatformDto getExchangePlatformById(@Parameter(description = "ID platformy wymiany do pobrania") @PathVariable String id) {
         logger.info("Otrzymano żądanie pobrania platformy wymiany o ID: {}", id);
         ExchangePlatform platform = exchangePlatformService.getExchangePlatformById(id);
         if (platform != null) {
@@ -55,18 +63,23 @@ public class ExchangePlatformController {
         }
     }
 
-    // Dodaj nową platformę wymiany
     @PostMapping
+    @Operation(summary = "Dodaj nową platformę wymiany", description = "Tworzy nową platformę wymiany")
+    @ApiResponse(responseCode = "201", description = "Pomyślnie dodano nową platformę wymiany")
     public ExchangePlatformDto addExchangePlatform(@RequestBody ExchangePlatform platform) {
         logger.info("Otrzymano żądanie dodania nowej platformy wymiany: {}", platform);
         ExchangePlatform newPlatform = exchangePlatformService.addExchangePlatform(platform);
         logger.info("Nowa platforma wymiany została dodana z ID: {}", newPlatform.getId());
         return new ExchangePlatformDto(newPlatform.getId(), newPlatform.getName(), newPlatform.getParseUrl());
     }
-    
-    // Zaktualizuj dane platformy wymiany
+
     @PutMapping("/{id}")
-    public ExchangePlatformDto updateExchangePlatform(@PathVariable String id, @RequestBody ExchangePlatform platform) {
+    @Operation(summary = "Aktualizuj platformę wymiany", description = "Aktualizuje istniejącą platformę wymiany")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie zaktualizowano platformę wymiany")
+    @ApiResponse(responseCode = "404", description = "Platforma wymiany nie znaleziona")
+    public ExchangePlatformDto updateExchangePlatform(
+            @Parameter(description = "ID platformy wymiany do zaktualizowania") @PathVariable String id,
+            @RequestBody ExchangePlatform platform) {
         logger.info("Otrzymano żądanie aktualizacji platformy wymiany o ID: {}", id);
         ExchangePlatform updatedPlatform = exchangePlatformService.updateExchangePlatform(id, platform);
         if (updatedPlatform != null) {
@@ -77,10 +90,12 @@ public class ExchangePlatformController {
             return null; 
         }
     }
-    
-    // Usuń platformę wymiany
+
     @DeleteMapping("/{id}")
-    public String deleteExchangePlatform(@PathVariable String id) {
+    @Operation(summary = "Usuń platformę wymiany", description = "Usuwa platformę wymiany po jej ID")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie usunięto platformę wymiany")
+    @ApiResponse(responseCode = "404", description = "Platforma wymiany nie znaleziona")
+    public String deleteExchangePlatform(@Parameter(description = "ID platformy wymiany do usunięcia") @PathVariable String id) {
         logger.info("Otrzymano żądanie usunięcia platformy wymiany o ID: {}", id);
         try {
             exchangePlatformService.deleteExchangePlatform(id);
