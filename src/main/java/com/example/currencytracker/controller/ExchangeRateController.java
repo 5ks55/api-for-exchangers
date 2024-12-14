@@ -63,4 +63,12 @@ public class ExchangeRateController {
         ExchangeRateDto updatedRate = exchangeRateService.updateExchangeRate(id, exchangeRateDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
     }
+    
+    // Usuń kurs waluty
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExchangeRate(@PathVariable String id) {
+        logger.info("Żądanie usunięcia kursu waluty o ID: {}", id);
+        exchangeRateService.deleteExchangeRate(id);
+        return ResponseEntity.noContent().build();
+    }
 }
