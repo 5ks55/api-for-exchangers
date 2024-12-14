@@ -63,5 +63,18 @@ public class ExchangePlatformController {
         logger.info("Nowa platforma wymiany została dodana z ID: {}", newPlatform.getId());
         return new ExchangePlatformDto(newPlatform.getId(), newPlatform.getName(), newPlatform.getParseUrl());
     }
-
+    
+    // Zaktualizuj dane platformy wymiany
+    @PutMapping("/{id}")
+    public ExchangePlatformDto updateExchangePlatform(@PathVariable String id, @RequestBody ExchangePlatform platform) {
+        logger.info("Otrzymano żądanie aktualizacji platformy wymiany o ID: {}", id);
+        ExchangePlatform updatedPlatform = exchangePlatformService.updateExchangePlatform(id, platform);
+        if (updatedPlatform != null) {
+            logger.info("Platforma wymiany o ID {} została pomyślnie zaktualizowana.", id);
+            return new ExchangePlatformDto(updatedPlatform.getId(), updatedPlatform.getName(), updatedPlatform.getParseUrl());
+        } else {
+            logger.warn("Nie znaleziono platformy wymiany o ID: {}", id);
+            return null; 
+        }
+    }
 }
