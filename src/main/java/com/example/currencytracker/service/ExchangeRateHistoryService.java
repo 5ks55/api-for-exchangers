@@ -26,7 +26,16 @@ public class ExchangeRateHistoryService {
         return exchangeRateHistoryRepository.findAll();
     }
 
+    public ExchangeRateHistory getExchangeRateHistoryById(String id) {
+        return exchangeRateHistoryRepository.findById(id).orElse(null);
+    }
+
     public ExchangeRateHistory addExchangeRateHistory(ExchangeRateHistory history) {
         return exchangeRateHistoryRepository.save(history);
     }
+
+    public void deleteById(String id) {
+        exchangeRateHistoryRepository.deleteById(id);
+    }
 }
+
