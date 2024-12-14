@@ -63,4 +63,17 @@ public class UserController {
         logger.info("Zaktualizowano dane użytkownika o ID: {}", updatedUser.getId());
         return updatedUser;
     }
+    
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable String id) {
+        logger.info("Otrzymano żądanie usunięcia użytkownika o ID: {}", id);
+        try {
+            userService.deleteUser(id);
+            logger.info("Użytkownik o ID {} został pomyślnie usunięty.", id);
+            return "Użytkownik usunięty pomyślnie.";
+        } catch (Exception e) {
+            logger.error("Wystąpił błąd podczas usuwania użytkownika o ID: {}", id, e);
+            return "Nie udało się usunąć użytkownika.";
+        }
+    }
 }
