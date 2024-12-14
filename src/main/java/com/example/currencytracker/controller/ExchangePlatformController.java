@@ -77,4 +77,18 @@ public class ExchangePlatformController {
             return null; 
         }
     }
+    
+    // Usuń platformę wymiany
+    @DeleteMapping("/{id}")
+    public String deleteExchangePlatform(@PathVariable String id) {
+        logger.info("Otrzymano żądanie usunięcia platformy wymiany o ID: {}", id);
+        try {
+            exchangePlatformService.deleteExchangePlatform(id);
+            logger.info("Platforma wymiany o ID {} została pomyślnie usunięta.", id);
+            return "Platforma wymiany została usunięta.";
+        } catch (Exception e) {
+            logger.error("Wystąpił błąd podczas usuwania platformy wymiany o ID: {}", id, e);
+            return "Nie udało się usunąć platformy wymiany.";
+        }
+    }
 }
