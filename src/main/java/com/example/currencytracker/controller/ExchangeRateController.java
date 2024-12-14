@@ -34,23 +34,31 @@ public class ExchangeRateController {
     // Pobierz wszystkie kursy walut
     @GetMapping
     public ResponseEntity<List<ExchangeRateDto>> getAllExchangeRates() {
-        logger.info("Żądanie pobrania wszystkich kursów walut");
+        logger.info("Rozpoczynanie pobierania wszystkich kursów walut z bazy danych.");
         List<ExchangeRateDto> rates = exchangeRateService.getAllExchangeRates();
+        logger.info("Pobrano {} kursów walut.", rates.size());
         return ResponseEntity.ok(rates);
     }
 
     // Pobierz kurs waluty po ID
     @GetMapping("/{id}")
     public ResponseEntity<ExchangeRateDto> getExchangeRateById(@PathVariable String id) {
-        logger.info("Żądanie pobrania kursu waluty o ID: {}", id);
+        logger.info("Rozpoczynanie pobierania kursu waluty o ID: {}", id);
         ExchangeRateDto rate = exchangeRateService.getExchangeRateById(id);
+        if (rate != null) {
+            logger.info("Znaleziono kurs waluty o ID: {}", id);
+        } else {
+            logger.warn("Nie znaleziono kursu waluty o ID: {}", id);
+        }
         return ResponseEntity.ok(rate);
     }
-     // Dodaj nowy kurs waluty
+
+    // Dodaj nowy kurs waluty
     @PostMapping
     public ResponseEntity<ExchangeRateDto> addExchangeRate(@RequestBody @Valid ExchangeRateDto exchangeRateDto) {
-        logger.info("Żądanie dodania nowego kursu waluty: {}", exchangeRateDto);
+        logger.info("Rozpoczynanie dodawania nowego kursu waluty: {}", exchangeRateDto);
         ExchangeRateDto createdRate = exchangeRateService.addExchangeRate(exchangeRateDto);
+        logger.info("Nowy kurs waluty został dodany: {}", createdRate);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRate);
     }
 
@@ -59,16 +67,18 @@ public class ExchangeRateController {
     public ResponseEntity<ExchangeRateDto> updateExchangeRate(
             @PathVariable String id, 
             @RequestBody @Valid ExchangeRateDto exchangeRateDto) {
-        logger.info("Żądanie aktualizacji kursu waluty o ID {}: {}", id, exchangeRateDto);
+        logger.info("Rozpoczynanie aktualizacji kursu waluty o ID: {}. Nowe dane: {}", id, exchangeRateDto);
         ExchangeRateDto updatedRate = exchangeRateService.updateExchangeRate(id, exchangeRateDto);
+        logger.info("Aktualizacja kursu waluty o ID: {} zakończona sukcesem.", id);
         return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
     }
-    
+
     // Usuń kurs waluty
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExchangeRate(@PathVariable String id) {
-        logger.info("Żądanie usunięcia kursu waluty o ID: {}", id);
+    public ResponseEntity<String> deleteExchangeRate(@PathVariable String id) {
+        logger.info("Rozpoczynanie usuwania kursu waluty o ID: {}", id);
         exchangeRateService.deleteExchangeRate(id);
-        return ResponseEntity.noContent().build();
+        logger.info("Kurs waluty o ID: {} został pomyślnie usunięty.", id);
+        return ResponseEntity.ok("Kurs waluty o ID: " + id + " został pomyślnie usunięty.");
     }
 }

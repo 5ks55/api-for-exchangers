@@ -70,7 +70,7 @@ public class UserController {
         try {
             userService.deleteUser(id);
             logger.info("Użytkownik o ID {} został pomyślnie usunięty.", id);
-            return "Użytkownik usunięty pomyślnie.";
+            return "Użytkownik o ID " + id + " usunięty pomyślnie.";
         } catch (Exception e) {
             logger.error("Wystąpił błąd podczas usuwania użytkownika o ID: {}", id, e);
             return "Nie udało się usunąć użytkownika.";

@@ -59,7 +59,7 @@ public class ExchangeRateHistoryController {
         try {
             exchangeRateHistoryService.deleteById(id);
             logger.info("Historia kursu waluty o ID {} została pomyślnie usunięta.", id);
-            return "Historia kursu waluty usunięta pomyślnie.";
+            return "Historia kursu " + id + " waluty usunięta pomyślnie.";
         } catch (Exception e) {
             logger.error("Wystąpił błąd podczas usuwania historii kursu waluty o ID: {}", id, e);
             return "Nie udało się usunąć historii kursu waluty.";

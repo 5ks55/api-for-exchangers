@@ -85,7 +85,7 @@ public class ExchangePlatformController {
         try {
             exchangePlatformService.deleteExchangePlatform(id);
             logger.info("Platforma wymiany o ID {} została pomyślnie usunięta.", id);
-            return "Platforma wymiany została usunięta.";
+            return "Platforma wymiany o ID " + id + " została usunięta.";
         } catch (Exception e) {
             logger.error("Wystąpił błąd podczas usuwania platformy wymiany o ID: {}", id, e);
             return "Nie udało się usunąć platformy wymiany.";
