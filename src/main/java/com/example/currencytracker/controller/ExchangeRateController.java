@@ -9,27 +9,42 @@ package com.example.currencytracker.controller;
  * @author Nkt
  */
 
+import com.example.currencytracker.dto.ExchangeRateDto;
 import com.example.currencytracker.model.ExchangeRate;
 import com.example.currencytracker.service.ExchangeRateService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/exchange-rates")
 public class ExchangeRateController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExchangeRateController.class);
+
     @Autowired
     private ExchangeRateService exchangeRateService;
 
+    // Pobierz wszystkie kursy walut
     @GetMapping
-    public List<ExchangeRate> getAllExchangeRates() {
-        return exchangeRateService.getAllExchangeRates();
+    public ResponseEntity<List<ExchangeRateDto>> getAllExchangeRates() {
+        logger.info("Żądanie pobrania wszystkich kursów walut");
+        List<ExchangeRateDto> rates = exchangeRateService.getAllExchangeRates();
+        return ResponseEntity.ok(rates);
     }
 
-    @PostMapping
-    public ExchangeRate addExchangeRate(@RequestBody ExchangeRate exchangeRate) {
-        return exchangeRateService.addExchangeRate(exchangeRate);
+    // Pobierz kurs waluty po ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ExchangeRateDto> getExchangeRateById(@PathVariable String id) {
+        logger.info("Żądanie pobrania kursu waluty o ID: {}", id);
+        ExchangeRateDto rate = exchangeRateService.getExchangeRateById(id);
+        return ResponseEntity.ok(rate);
     }
+
 }

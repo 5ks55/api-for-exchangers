@@ -20,3 +20,4 @@ public interface ExchangeRateRepository extends MongoRepository<ExchangeRate, St
     List<ExchangeRate> findByCurrencyPair(String currencyPair);
 }
 
+

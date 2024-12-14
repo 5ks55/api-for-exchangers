@@ -19,12 +19,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ExchangeRate {
     @Id
     private String id;
-
+    
     private String currencyPair;
     private Double buyRate;
     private Double sellRate;
     private LocalDateTime lastUpdated;
-    private String platformId;   
+    private int platformId;   
 }
 
 
