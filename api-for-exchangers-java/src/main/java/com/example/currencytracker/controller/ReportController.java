@@ -19,8 +19,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -35,11 +38,27 @@ public class ReportController {
     @GetMapping
     @Operation(summary = "Pobierz wszystkie raporty", description = "Zwraca listę wszystkich raportów")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie raporty")
-    public List<Report> getAllReports() {
-        logger.info("Rozpoczynanie pobierania wszystkich raportów z bazy danych.");
-        List<Report> reports = reportService.getAllReports();
-        logger.info("Pobrano {} raportów.", reports.size());
-        return reports;
+    public List<Report> getAllReports(@Parameter(description = "Środowisko: 'dev' lub 'prod'") @RequestParam(defaultValue = "dev") String environment) {
+        logger.info("Rozpoczynanie pobierania wszystkich raportów z FastAPI dla środowiska: {}", environment);
+
+        String fastApiUrl = "http://localhost:8000/api/reports?environment=" + environment;
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<Report[]> response = restTemplate.getForEntity(fastApiUrl, Report[].class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                List<Report> reports = List.of(response.getBody());
+                logger.info("Pobrano {} raportów z FastAPI.", reports.size());
+                return reports;
+            } else {
+                logger.warn("FastAPI zwróciło kod statusu: {}", response.getStatusCode());
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            logger.error("Błąd podczas pobierania raportów z FastAPI: {}", e.getMessage());
+            throw new RuntimeException("Nie udało się pobrać raportów z FastAPI.");
+        }
     }
 
     @GetMapping("/{id}")

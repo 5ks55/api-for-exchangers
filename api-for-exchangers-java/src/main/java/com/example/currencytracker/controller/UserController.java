@@ -20,8 +20,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/users")
@@ -34,14 +37,31 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    @Operation(summary = "Pobierz wszystkich użytkowników", description = "Zwraca listę wszystkich użytkowników")
+    @Operation(summary = "Pobierz wszystkich użytkowników", description = "Zwraca listę wszystkich użytkowników z FastAPI")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkich użytkowników")
-    public List<User> getAllUsers() {
-        logger.info("Otrzymano żądanie pobrania wszystkich użytkowników.");
-        List<User> users = userService.getAllUsers();
-        logger.debug("Zwrócono {} użytkowników.", users.size());
-        return users;
+    public List<UserDto> getAllUsersFromFastAPI(@Parameter(description = "Środowisko: 'dev' lub 'prod'") @RequestParam(defaultValue = "dev") String environment) {
+        logger.info("Rozpoczynanie pobierania wszystkich użytkowników z FastAPI dla środowiska: {}", environment);
+
+        String fastApiUrl = "http://localhost:8000/api/users?environment=" + environment;
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<UserDto[]> response = restTemplate.getForEntity(fastApiUrl, UserDto[].class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                List<UserDto> users = List.of(response.getBody());
+                logger.info("Pobrano {} użytkowników z FastAPI.", users.size());
+                return users;
+            } else {
+                logger.warn("FastAPI zwróciło kod statusu: {}", response.getStatusCode());
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            logger.error("Błąd podczas pobierania użytkowników z FastAPI: {}", e.getMessage());
+            throw new RuntimeException("Nie udało się pobrać użytkowników z FastAPI.");
+        }
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Pobierz użytkownika po ID", description = "Zwraca użytkownika po jego ID")

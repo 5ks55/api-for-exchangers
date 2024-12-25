@@ -21,9 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/exchange-rates")
@@ -36,14 +39,29 @@ public class ExchangeRateController {
     private ExchangeRateService exchangeRateService;
 
     @GetMapping
-    @Operation(summary = "Pobierz wszystkie kursy walut", description = "Pobiera wszystkie kursy walut z bazy danych")
+    @Operation(summary = "Pobierz wszystkie kursy walut", description = "Pobiera wszystkie kursy walut z FastAPI")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie kursy walut")
-    public ResponseEntity<List<ExchangeRateDto>> getAllExchangeRates() {
-        logger.info("Rozpoczynanie pobierania wszystkich kursów walut z bazy danych.");
-        List<ExchangeRateDto> rates = exchangeRateService.getAllExchangeRates();
-        logger.info("Pobrano {} kursów walut.", rates.size());
-        return ResponseEntity.ok(rates);
+    public ResponseEntity<List<ExchangeRateDto>> getAllExchangeRates(
+            @Parameter(description = "Środowisko: 'dev' lub 'prod'")
+            @RequestParam(value = "environment", defaultValue = "dev") String environment) {
+        logger.info("Rozpoczynanie pobierania wszystkich kursów walut z FastAPI.");
+
+        String fastApiUrl = "http://localhost:8000/api/exchange-rates?environment=" + environment;
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<ExchangeRateDto[]> response = restTemplate.getForEntity(fastApiUrl, ExchangeRateDto[].class);
+
+            List<ExchangeRateDto> rates = Arrays.asList(response.getBody());
+            logger.info("Pobrano {} kursów walut z FastAPI.", rates.size());
+
+            return ResponseEntity.ok(rates);
+        } catch (Exception e) {
+            logger.error("Błąd podczas pobierania kursów walut z FastAPI: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Pobierz kurs waluty po ID", description = "Pobiera kurs waluty po jego ID")

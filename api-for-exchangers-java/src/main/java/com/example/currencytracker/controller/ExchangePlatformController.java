@@ -20,9 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/exchange-platforms")
@@ -35,17 +38,28 @@ public class ExchangePlatformController {
     private ExchangePlatformService exchangePlatformService;
 
     @GetMapping
-    @Operation(summary = "Pobierz wszystkie platformy wymiany", description = "Pobiera wszystkie platformy wymiany z bazy danych")
+    @Operation(summary = "Pobierz wszystkie platformy wymiany", description = "Pobiera wszystkie platformy wymiany z FastAPI")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie platformy wymiany")
-    public List<ExchangePlatformDto> getAllExchangePlatforms() {
-        logger.info("Otrzymano żądanie pobrania wszystkich platform wymiany.");
-        List<ExchangePlatform> platforms = exchangePlatformService.getAllExchangePlatforms();
-        List<ExchangePlatformDto> platformDtos = platforms.stream()
-            .map(platform -> new ExchangePlatformDto(platform.getId(), platform.getName(), platform.getParseUrl()))
-            .collect(Collectors.toList());
-        logger.debug("Zwrócono {} platformy wymiany.", platformDtos.size());
-        return platformDtos;
+    public ResponseEntity<List<ExchangePlatform>> getExchangePlatformsFromPython(
+            @Parameter(description = "Środowisko: 'dev' lub 'prod'")
+            @RequestParam(defaultValue = "dev") String environment) {
+        logger.info("Rozpoczynanie pobierania platform wymiany z FastAPI.");
+
+        String fastApiUrl = "http://localhost:8000/api/exchange-platforms?environment=" + environment;
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ExchangePlatform[] platformsArray = restTemplate.getForObject(fastApiUrl, ExchangePlatform[].class);
+            List<ExchangePlatform> platforms = Arrays.asList(platformsArray);
+
+            logger.info("Pomyślnie pobrano {} platform wymiany z FastAPI.", platforms.size());
+            return ResponseEntity.ok(platforms);
+        } catch (Exception e) {
+            logger.error("Błąd podczas pobierania platform wymiany z FastAPI: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Pobierz platformę wymiany po ID", description = "Pobiera platformę wymiany po jej ID")

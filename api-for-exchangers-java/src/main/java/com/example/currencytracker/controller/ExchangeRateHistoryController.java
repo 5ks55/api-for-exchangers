@@ -20,9 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/exchange-rate-history")
@@ -34,17 +37,34 @@ public class ExchangeRateHistoryController {
     @Autowired
     private ExchangeRateHistoryService exchangeRateHistoryService;
 
+    private final String fastApiUrl = "http://localhost:8000/api/exchange-rate-history";
+    RestTemplate restTemplate = new RestTemplate();
+
     @GetMapping
     @Operation(summary = "Pobierz wszystkie historie kursów", description = "Zwraca listę wszystkich historii kursów walut")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie historie kursów")
-    public List<ExchangeRateHistoryDto> pobierzWszystkieHistorieKursow() {
+    public List<ExchangeRateHistoryDto> pobierzWszystkieHistorieKursow(@Parameter(description = "Środowisko: 'dev' lub 'prod'") @RequestParam(defaultValue = "dev") String environment) {
         logger.info("Otrzymano żądanie pobrania wszystkich historii kursów walut.");
-        List<ExchangeRateHistoryDto> historie = exchangeRateHistoryService.getAllExchangeRateHistories()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-        logger.debug("Zwrócono {} rekordów historii kursów walut.", historie.size());
-        return historie;
+
+        String urlWithParams = fastApiUrl + "?environment=" + environment;
+        
+        try {
+            // Запрос к FastAPI
+            ExchangeRateHistory[] historyArray = restTemplate.getForObject(urlWithParams, ExchangeRateHistory[].class);
+            if (historyArray != null) {
+                List<ExchangeRateHistoryDto> historie = Arrays.stream(historyArray)
+                        .map(this::convertToDto)
+                        .collect(Collectors.toList());
+                logger.debug("Zwrócono {} rekordów historii kursów walut.", historie.size());
+                return historie;
+            } else {
+                logger.warn("Brak danych z FastAPI.");
+                return Collections.emptyList();
+            }
+        } catch (Exception e) {
+            logger.error("Wystąpił błąd podczas pobierania historii kursów walut z FastAPI", e);
+            return Collections.emptyList();
+        }
     }
 
     @GetMapping("/{id}")
