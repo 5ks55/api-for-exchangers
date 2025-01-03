@@ -47,7 +47,7 @@ class User(BaseModel):
 
 class Report(BaseModel):
     id: str
-    userId: int
+    userId: str
     currencyPair: List[str]
     timeRange: dict
     createdOn: datetime

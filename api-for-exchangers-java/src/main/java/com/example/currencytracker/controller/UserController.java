@@ -64,19 +64,20 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    @Operation(summary = "Pobierz użytkownika po ID", description = "Zwraca użytkownika po jego ID")
+    @Operation(summary = "Pobierz użytkownika po ID", description = "Zwraca dane użytkownika")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano użytkownika")
     @ApiResponse(responseCode = "404", description = "Użytkownik nie został znaleziony")
-    public User getUserById(@Parameter(description = "ID użytkownika, który ma zostać pobrany") @PathVariable String id) {
+    public UserDto getUserById(@Parameter(description = "ID użytkownika, który ma zostać pobrany") @PathVariable String id) {
         logger.info("Otrzymano żądanie pobrania użytkownika o ID: {}", id);
-        User user = userService.getUserById(id);
-        if (user != null) {
-            logger.debug("Zwrócono użytkownika: {}", user);
+        UserDto userDto = userService.getUserById(id);
+        if (userDto != null) {
+            logger.debug("Zwrócono użytkownika: {}", userDto);
         } else {
             logger.warn("Nie znaleziono użytkownika o ID: {}", id);
         }
-        return user;
+        return userDto;
     }
+
 
     @PostMapping
     @Operation(summary = "Dodaj nowego użytkownika", description = "Tworzy nowego użytkownika")

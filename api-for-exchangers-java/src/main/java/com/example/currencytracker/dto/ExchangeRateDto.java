@@ -16,6 +16,7 @@ import com.example.currencytracker.model.ExchangeRate;
 
 public class ExchangeRateDto {
 
+    private String id;
     private String currencyPair;
     private double buyRate;
     private double sellRate;
@@ -29,13 +30,22 @@ public class ExchangeRateDto {
     }
     
     public ExchangeRateDto(ExchangeRate exchangeRate) {
+        this.id = exchangeRate.getId();
         this.currencyPair = exchangeRate.getCurrencyPair();
         this.buyRate = exchangeRate.getBuyRate();
         this.sellRate = exchangeRate.getSellRate();
         this.lastUpdated = exchangeRate.getLastUpdated();
         this.platformId = exchangeRate.getPlatformId();
     }
+    
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+    
     public String getCurrencyPair() {
         return currencyPair;
     }

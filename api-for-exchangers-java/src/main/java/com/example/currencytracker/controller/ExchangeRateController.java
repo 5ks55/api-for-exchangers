@@ -32,7 +32,7 @@ import java.util.Arrays;
 @RequestMapping("/api/exchange-rates")
 @Tag(name = "Exchange Rate Controller", description = "API do zarządzania kursami walut")
 public class ExchangeRateController {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(ExchangeRateController.class);
 
     @Autowired
@@ -61,7 +61,6 @@ public class ExchangeRateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     @GetMapping("/{id}")
     @Operation(summary = "Pobierz kurs waluty po ID", description = "Pobiera kurs waluty po jego ID")
@@ -101,6 +100,8 @@ public class ExchangeRateController {
         logger.info("Aktualizacja kursu waluty o ID: {} zakończona sukcesem.", id);
         return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
     }
+    
+    
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Usuń kurs waluty", description = "Usuwa kurs waluty po jego ID")
