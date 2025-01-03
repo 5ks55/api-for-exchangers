@@ -15,18 +15,15 @@ public class ExchangePlatformDto {
     private String name;
     private String parseUrl;
 
-    // Konstruktor bezargumentowy
     public ExchangePlatformDto() {
     }
 
-    // Konstruktor z argumentami
     public ExchangePlatformDto(String id, String name, String parseUrl) {
         this.id = id;
         this.name = name;
         this.parseUrl = parseUrl;
     }
 
-    // Gettery i settery
     public String getId() {
         return id;
     }

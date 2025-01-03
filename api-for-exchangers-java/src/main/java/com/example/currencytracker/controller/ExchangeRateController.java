@@ -9,6 +9,8 @@ package com.example.currencytracker.controller;
  * @author Nkt
  */
 
+import com.example.currencytracker.dto.CurrencyPairUpdate;
+import com.example.currencytracker.exception.EntityNotFoundException;
 import com.example.currencytracker.dto.ExchangeRateDto;
 import com.example.currencytracker.service.ExchangeRateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 import jakarta.validation.Valid;
@@ -37,6 +40,9 @@ public class ExchangeRateController {
 
     @Autowired
     private ExchangeRateService exchangeRateService;
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     @Operation(summary = "Pobierz wszystkie kursy walut", description = "Pobiera wszystkie kursy walut z FastAPI")
@@ -84,6 +90,19 @@ public class ExchangeRateController {
     public ResponseEntity<ExchangeRateDto> addExchangeRate(@RequestBody @Valid ExchangeRateDto exchangeRateDto) {
         logger.info("Rozpoczynanie dodawania nowego kursu waluty: {}", exchangeRateDto);
         ExchangeRateDto createdRate = exchangeRateService.addExchangeRate(exchangeRateDto);
+
+        CurrencyPairUpdate updateMessage = new CurrencyPairUpdate();
+        updateMessage.setCurrencyPair(createdRate.getCurrencyPair());
+        updateMessage.setBuyRate(createdRate.getBuyRate());
+        updateMessage.setSellRate(createdRate.getSellRate());
+        updateMessage.setLastUpdated(createdRate.getLastUpdated());
+        updateMessage.setAction("added");
+
+        String[] currencyPairs = createdRate.getCurrencyPair().split(",");
+        for (String pair : currencyPairs) {
+            messagingTemplate.convertAndSend("/topic/exchange-rate/" + pair.trim(), updateMessage);
+        }
+
         logger.info("Nowy kurs waluty został dodany: {}", createdRate);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRate);
     }
@@ -93,15 +112,34 @@ public class ExchangeRateController {
     @ApiResponse(responseCode = "200", description = "Pomyślnie zaktualizowano kurs waluty")
     @ApiResponse(responseCode = "404", description = "Kurs waluty nie znaleziony")
     public ResponseEntity<ExchangeRateDto> updateExchangeRate(
-            @Parameter(description = "ID kursu waluty do zaktualizowania") @PathVariable String id, 
+            @Parameter(description = "ID kursu waluty do zaktualizowania") @PathVariable String id,
             @RequestBody @Valid ExchangeRateDto exchangeRateDto) {
+
         logger.info("Rozpoczynanie aktualizacji kursu waluty o ID: {}. Nowe dane: {}", id, exchangeRateDto);
-        ExchangeRateDto updatedRate = exchangeRateService.updateExchangeRate(id, exchangeRateDto);
-        logger.info("Aktualizacja kursu waluty o ID: {} zakończona sukcesem.", id);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
+
+        try {
+            ExchangeRateDto updatedRate = exchangeRateService.updateExchangeRate(id, exchangeRateDto);
+
+            CurrencyPairUpdate updateMessage = new CurrencyPairUpdate();
+            updateMessage.setCurrencyPair(updatedRate.getCurrencyPair());
+            updateMessage.setBuyRate(updatedRate.getBuyRate());
+            updateMessage.setSellRate(updatedRate.getSellRate());
+            updateMessage.setLastUpdated(updatedRate.getLastUpdated());
+            updateMessage.setAction("updated");
+
+            String[] currencyPairs = updatedRate.getCurrencyPair().split(",");  
+            for (String pair : currencyPairs) {
+                messagingTemplate.convertAndSend("/topic/exchange-rate/" + pair.trim(), updateMessage);
+            }
+
+            logger.info("Aktualizacja kursu waluty o ID: {} zakończona sukcesem.", id);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedRate);
+
+        } catch (EntityNotFoundException e) {
+            logger.warn("Nie znaleziono kursu waluty o ID: {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-    
-    
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Usuń kurs waluty", description = "Usuwa kurs waluty po jego ID")

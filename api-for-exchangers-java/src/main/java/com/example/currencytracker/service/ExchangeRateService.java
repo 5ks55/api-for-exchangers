@@ -28,7 +28,7 @@ public class ExchangeRateService {
     public List<ExchangeRateDto> getAllExchangeRates() {
         List<ExchangeRate> exchangeRates = exchangeRateRepository.findAll();
         return exchangeRates.stream()
-                .map(exchangeRate -> new ExchangeRateDto(exchangeRate)) // Преобразуем ExchangeRate в ExchangeRateDto
+                .map(exchangeRate -> new ExchangeRateDto(exchangeRate)) 
                 .collect(Collectors.toList());
     }
 
@@ -36,7 +36,7 @@ public class ExchangeRateService {
     public ExchangeRateDto getExchangeRateById(String id) {
         ExchangeRate exchangeRate = exchangeRateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Exchange rate not found"));
-        return new ExchangeRateDto(exchangeRate);  // Преобразуем модель в DTO
+        return new ExchangeRateDto(exchangeRate); 
     }
 
     public ExchangeRateDto addExchangeRate(ExchangeRateDto exchangeRateDto) {

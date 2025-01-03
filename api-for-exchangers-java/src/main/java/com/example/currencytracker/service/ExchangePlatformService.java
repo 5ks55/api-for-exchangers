@@ -23,23 +23,19 @@ public class ExchangePlatformService {
     @Autowired
     private ExchangePlatformRepository exchangePlatformRepository;
 
-    // Pobierz wszystkie platformy wymiany
     public List<ExchangePlatform> getAllExchangePlatforms() {
         return exchangePlatformRepository.findAll();
     }
 
-    // Pobierz platformę wymiany po ID
     public ExchangePlatform getExchangePlatformById(String id) {
         Optional<ExchangePlatform> platform = exchangePlatformRepository.findById(id);
         return platform.orElse(null);
     }
 
-    // Dodaj nową platformę wymiany
     public ExchangePlatform addExchangePlatform(ExchangePlatform platform) {
         return exchangePlatformRepository.save(platform);
     }
 
-    // Zaktualizuj dane platformy wymiany
     public ExchangePlatform updateExchangePlatform(String id, ExchangePlatform platform) {
         Optional<ExchangePlatform> existingPlatform = exchangePlatformRepository.findById(id);
         if (existingPlatform.isPresent()) {
@@ -51,7 +47,6 @@ public class ExchangePlatformService {
         return null;
     }
 
-    // Usuń platformę wymiany
     public void deleteExchangePlatform(String id) {
         exchangePlatformRepository.deleteById(id);
     }
