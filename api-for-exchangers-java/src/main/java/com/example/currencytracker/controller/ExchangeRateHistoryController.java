@@ -6,7 +6,7 @@ package com.example.currencytracker.controller;
 
 /**
  *
- * @author Nkt
+ * @author Nkt, Nazar
  */
 
 import com.example.currencytracker.dto.ExchangeRateHistoryDto;
@@ -49,7 +49,6 @@ public class ExchangeRateHistoryController {
         String urlWithParams = fastApiUrl + "?environment=" + environment;
         
         try {
-            // Запрос к FastAPI
             ExchangeRateHistory[] historyArray = restTemplate.getForObject(urlWithParams, ExchangeRateHistory[].class);
             if (historyArray != null) {
                 List<ExchangeRateHistoryDto> historie = Arrays.stream(historyArray)

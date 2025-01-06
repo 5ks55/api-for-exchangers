@@ -6,7 +6,7 @@ package com.example.currencytracker.controller;
 
 /**
  *
- * @author Nkt
+ * @author Nkt, Nazar, IVAN
  */
 
 import com.example.currencytracker.dto.CurrencyPairUpdate;

@@ -6,7 +6,7 @@ package com.example.currencytracker.service;
 
 /**
  *
- * @author Nkt
+ * @author Nkt, Nazar
  */
 
 import com.example.currencytracker.dto.ExchangeRateDto;
