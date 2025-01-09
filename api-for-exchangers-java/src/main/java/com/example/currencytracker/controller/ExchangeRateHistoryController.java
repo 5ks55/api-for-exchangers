@@ -43,7 +43,7 @@ public class ExchangeRateHistoryController {
     @GetMapping
     @Operation(summary = "Pobierz wszystkie historie kursów", description = "Zwraca listę wszystkich historii kursów walut")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie historie kursów")
-    public List<ExchangeRateHistoryDto> pobierzWszystkieHistorieKursow(@Parameter(description = "Środowisko: 'dev' lub 'prod'") @RequestParam(defaultValue = "dev") String environment) {
+    public List<ExchangeRateHistoryDto> getAllExchangeRateHistories(@Parameter(description = "Środowisko: 'dev' lub 'prod'") @RequestParam(defaultValue = "dev") String environment) {
         logger.info("Otrzymano żądanie pobrania wszystkich historii kursów walut.");
 
         String urlWithParams = fastApiUrl + "?environment=" + environment;
@@ -70,7 +70,7 @@ public class ExchangeRateHistoryController {
     @Operation(summary = "Pobierz historię kursu waluty po ID", description = "Zwraca historię kursu waluty na podstawie ID")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano historię kursu")
     @ApiResponse(responseCode = "404", description = "Historia kursu o podanym ID nie została znaleziona")
-    public ExchangeRateHistoryDto pobierzHistorieKursuPoId(
+    public ExchangeRateHistoryDto getExchangeRateHistoryById(
             @Parameter(description = "ID historii kursu waluty do pobrania") @PathVariable String id) {
         logger.info("Otrzymano żądanie pobrania historii kursu waluty o ID: {}", id);
         ExchangeRateHistory historia = exchangeRateHistoryService.getExchangeRateHistoryById(id);
@@ -87,7 +87,7 @@ public class ExchangeRateHistoryController {
     @Operation(summary = "Usuń historię kursu", description = "Usuwa historię kursu waluty na podstawie ID")
     @ApiResponse(responseCode = "200", description = "Pomyślnie usunięto historię kursu")
     @ApiResponse(responseCode = "404", description = "Historia kursu o podanym ID nie została znaleziona")
-    public String usunHistorieKursu(@Parameter(description = "ID historii kursu waluty do usunięcia") @PathVariable String id) {
+    public String deleteById(@Parameter(description = "ID historii kursu waluty do usunięcia") @PathVariable String id) {
         logger.info("Otrzymano żądanie usunięcia historii kursu waluty o ID: {}", id);
         try {
             exchangeRateHistoryService.deleteById(id);
@@ -102,7 +102,7 @@ public class ExchangeRateHistoryController {
     @PostMapping
     @Operation(summary = "Dodaj historię kursu", description = "Tworzy nową historię kursu waluty")
     @ApiResponse(responseCode = "201", description = "Pomyślnie utworzono historię kursu waluty")
-    public ExchangeRateHistoryDto dodajHistorieKursu(@RequestBody ExchangeRateHistoryDto dto) {
+    public ExchangeRateHistoryDto addExchangeRateHistory(@RequestBody ExchangeRateHistoryDto dto) {
         logger.info("Otrzymano żądanie dodania nowej historii kursu waluty: {}", dto);
         ExchangeRateHistory historia = exchangeRateHistoryService.addExchangeRateHistory(convertToEntity(dto));
         logger.info("Nowa historia kursu waluty została zapisana z ID: {}", historia.getId());
