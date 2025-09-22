@@ -5,11 +5,11 @@ from pydantic import BaseModel
 from datetime import datetime
 import logging
 
-# Уstawienia loggera
+# Ustawienia loggera
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CurrencyTrackerAPI")
 
-# Подłączenie do MongoDB
+# Podłączenie do MongoDB
 client = MongoClient("mongodb://localhost:27017/")
 db_dev = client["currency_tracker_db_dev"]
 db_prod = client["currency_tracker_db_prod"]
